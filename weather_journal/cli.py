@@ -17,6 +17,11 @@ def cmd_add(args):
 
 
 def cmd_log(args):
+    # Validate city name is not empty or whitespace-only
+    if not args.city or not args.city.strip():
+        print("Error: City name cannot be empty or contain only whitespace.")
+        sys.exit(1)
+
     try:
         data = get_current(args.city, args.key)
     except Exception as e:

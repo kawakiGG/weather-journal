@@ -12,10 +12,14 @@ _cache = {}
 
 def get_current(city, api_key=None):
     """Fetches current weather for a city from OpenWeatherMap.
-    
+
     Returns a dictionary with temperature, humidity, and condition description.
     """
-    city_lower = city.lower()
+    # Validate city name is not empty or whitespace-only
+    if not city or not city.strip():
+        raise ValueError("City name cannot be empty or contain only whitespace.")
+
+    city_lower = city.strip().lower()
     if city_lower in _cache:
         cached_time, cached_data = _cache[city_lower]
         if time.time() - cached_time < 600:
