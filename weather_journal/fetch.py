@@ -57,12 +57,31 @@ def get_current(city, api_key=None):
     except Exception as e:
         raise ValueError(f"Invalid JSON in API response: {e}")
 
+    # Validate required top-level fields
+    if "main" not in data or "weather" not in data or "name" not in data:
+        raise ValueError("Unexpected API response format: missing required fields.")
+
+    # Validate required sub-fields in main
+    if "temp" not in data["main"] or "humidity" not in data["main"]:
+        raise ValueError("Unexpected API response format: missing temperature or humidity.")
+
+    # Validate weather array is not empty
+    if not data["weather"]:
+        raise ValueError("Unexpected API response format: no weather data available.")
+
+    # Validate values are not None
+    if data["main"]["temp"] is None or data["main"]["humidity"] is None:
+        raise ValueError("Unexpected API response format: temperature or humidity is null.")
+
+    if data["weather"][0].get("description") is None:
+        raise ValueError("Unexpected API response format: weather description is null.")
+
     result = {
         "city": data["name"],
         "temp": round(data["main"]["temp"], 1),
         "humidity": data["main"]["humidity"],
         "condition": data["weather"][0]["description"]
     }
-    
+
     _cache[city_lower] = (time.time(), result)
     return result
